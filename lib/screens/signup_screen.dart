@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:phone_book/resources/auth_methods.dart';
+import 'package:phone_book/screens/home_screen.dart';
 import 'package:phone_book/screens/signin_screen.dart';
+import 'package:phone_book/utils/show_snackbar.dart';
 import 'package:phone_book/widgets/custom_button.dart';
 import 'package:phone_book/widgets/custom_textfield.dart';
 
@@ -13,6 +16,40 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+
+  void register() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String res = await AuthMethods().signUp(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    if (res == 'Success') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+        ),
+      );
+    } else {
+      showSnackBar(res, context);
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +90,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 14),
                 CustomButton(
-                  onTap: () {},
+                  onTap: register,
                   text: 'Sign Up',
+                  isLoading: _isLoading,
                 ),
                 const Spacer(),
                 Row(
