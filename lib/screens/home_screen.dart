@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 import 'package:phone_book/constants.dart';
 import 'package:phone_book/resources/auth_methods.dart';
 import 'package:phone_book/resources/firestore_methods.dart';
 import 'package:phone_book/screens/add_employee_screen.dart';
+import 'package:phone_book/screens/employee_detailed_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -107,7 +107,15 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ],
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => EmployeeDetailedScreen(
+                                  employee: employee,
+                                ),
+                              ),
+                            );
+                          },
                           child: ListTile(
                             title: Text(
                               employee['fullName'],
