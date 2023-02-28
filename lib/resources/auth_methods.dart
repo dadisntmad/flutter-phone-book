@@ -45,6 +45,8 @@ class AuthMethods {
       } else {
         await auth.signInWithEmailAndPassword(email: email, password: password);
       }
+
+      response = 'Success';
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         response = 'No user found for that email.';

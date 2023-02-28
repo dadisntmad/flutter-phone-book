@@ -36,6 +36,8 @@ dependencies:
   firebase_core: ^2.7.0
   firebase_auth: ^4.2.9
   cloud_firestore: ^4.4.3
+  uuid: ^3.0.7
+  flutter_swipe_action_cell: ^3.1.0
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
