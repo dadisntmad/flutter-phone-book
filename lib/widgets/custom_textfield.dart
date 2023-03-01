@@ -11,7 +11,7 @@ class CustomTextField extends StatelessWidget {
     required this.placeholder,
     required this.controller,
     this.keyboardType,
-    required this.isPassword,
+    this.isPassword = false,
   }) : super(key: key);
 
   @override

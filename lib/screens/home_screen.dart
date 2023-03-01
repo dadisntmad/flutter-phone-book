@@ -31,7 +31,10 @@ class HomeScreen extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => const AddEmployeeScreen(),
+                  builder: (_) => const AddEmployeeScreen(
+                    isEditMode: false,
+                    employee: null,
+                  ),
                 ),
               );
             },
@@ -46,94 +49,120 @@ class HomeScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(14.0),
         child: Column(
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                hintText: 'Search',
-                filled: true,
-                isDense: true,
-                contentPadding: const EdgeInsets.all(10),
-              ),
-            ),
-            StreamBuilder(
-              stream: db
-                  .collection('employees')
-                  .where('companyId', isEqualTo: auth.currentUser?.uid)
-                  .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.black,
-                    ),
-                  );
-                }
-                return Expanded(
-                  child: ListView.separated(
-                    itemCount: snapshot.data!.docs.length,
-                    separatorBuilder: (BuildContext context, int index) =>
-                        const Divider(),
-                    itemBuilder: (BuildContext context, int index) {
-                      final employee = snapshot.data!.docs[index];
+          children: const [
+            _SearchTextField(),
+            _EmployeesList(),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-                      return SwipeActionCell(
-                        key: UniqueKey(),
-                        trailingActions: <SwipeAction>[
-                          SwipeAction(
-                            icon: const Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                            ),
-                            onTap: (CompletionHandler handler) async {
-                              await handler(true);
-                              await FirestoreMethods().delete(
-                                employee['docId'],
-                              );
-                            },
-                            color: Colors.red,
-                          ),
-                          SwipeAction(
-                            icon: const Icon(Icons.edit, color: Colors.white),
-                            onTap: (CompletionHandler handler) async {
-                              handler(false);
-                            },
-                            color: Colors.grey,
-                          ),
-                        ],
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => EmployeeDetailedScreen(
-                                  employee: employee,
-                                ),
-                              ),
-                            );
-                          },
-                          child: ListTile(
-                            title: Text(
-                              employee['fullName'],
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+class _SearchTextField extends StatelessWidget {
+  const _SearchTextField();
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.search),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        hintText: 'Search',
+        filled: true,
+        isDense: true,
+        contentPadding: const EdgeInsets.all(10),
+      ),
+    );
+  }
+}
+
+class _EmployeesList extends StatelessWidget {
+  const _EmployeesList({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: db
+          .collection('employees')
+          .where('companyId', isEqualTo: auth.currentUser?.uid)
+          .snapshots(),
+      builder: (BuildContext context,
+          AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.black,
+            ),
+          );
+        }
+        return Expanded(
+          child: ListView.separated(
+            itemCount: snapshot.data!.docs.length,
+            separatorBuilder: (BuildContext context, int index) =>
+                const Divider(),
+            itemBuilder: (BuildContext context, int index) {
+              final employee = snapshot.data!.docs[index];
+
+              return SwipeActionCell(
+                key: UniqueKey(),
+                trailingActions: <SwipeAction>[
+                  SwipeAction(
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                    onTap: (CompletionHandler handler) async {
+                      await handler(true);
+                      await FirestoreMethods().delete(
+                        employee['docId'],
+                      );
+                    },
+                    color: Colors.red,
+                  ),
+                  SwipeAction(
+                    icon: const Icon(Icons.edit, color: Colors.white),
+                    onTap: (CompletionHandler handler) async {
+                      handler(false);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => AddEmployeeScreen(
+                            isEditMode: true,
+                            employee: employee,
                           ),
                         ),
                       );
                     },
+                    color: Colors.grey,
                   ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+                ],
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => EmployeeDetailedScreen(
+                          employee: employee,
+                        ),
+                      ),
+                    );
+                  },
+                  child: ListTile(
+                    title: Text(
+                      employee['fullName'],
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

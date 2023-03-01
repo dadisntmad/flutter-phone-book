@@ -33,7 +33,28 @@ class FirestoreMethods {
     }
   }
 
+  // delete an employee
   Future<void> delete(String id) async {
     await db.collection('employees').doc(id).delete();
+  }
+
+  // edit an employee
+  Future<void> edit(
+    String fullName,
+    String phoneNumber,
+    String email,
+    String position,
+    String docId,
+  ) async {
+    try {
+      await db.collection('employees').doc(docId).update({
+        'fullName': fullName,
+        'phoneNumber': phoneNumber,
+        'email': email,
+        'position': position,
+      });
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }

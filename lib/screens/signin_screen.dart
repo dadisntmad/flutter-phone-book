@@ -79,7 +79,6 @@ class _SignInScreenState extends State<SignInScreen> {
                 CustomTextField(
                   placeholder: 'Email',
                   controller: _emailController,
-                  isPassword: false,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 14),

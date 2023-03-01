@@ -75,7 +75,6 @@ class EmployeeDetailedScreen extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }
 
